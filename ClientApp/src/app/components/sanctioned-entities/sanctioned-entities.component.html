@@ -1,5 +1,7 @@
 <h1 id="tableLabel">Sanctioned Entities</h1>
-
+<button mat-raised-button color="primary" (click)="openCreateModal()">
+    Create Entity
+</button>
 <p *ngIf="!entities"><em>Loading...</em></p>
 
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="entities">

@@ -1,13 +1,12 @@
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { SanctionedEntity } from '../models/sanctioned-entity';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SanctionedEntitiesService {
-
   private readonly apiUrl: string;
   private readonly path = 'sanctioned-entities';
 
@@ -18,5 +17,19 @@ export class SanctionedEntitiesService {
   public getSanctionedEntities(): Observable<SanctionedEntity[]> {
     const url = this.apiUrl + this.path;
     return this.http.get<SanctionedEntity[]>(url);
+  }
+
+  // POST method to add a new entity
+  public addSanctionedEntity(
+    entity: SanctionedEntity
+  ): Observable<SanctionedEntity> {
+    const url = this.apiUrl + this.path;
+    return this.http.post<SanctionedEntity>(url, entity).pipe(
+      catchError((error) => {
+        console.error('Error adding sanctioned entity:', error);
+        //We can use angular material snackbar or something to show error to user in nice way To Do
+        return throwError(() => error);
+      })
+    );
   }
 }
