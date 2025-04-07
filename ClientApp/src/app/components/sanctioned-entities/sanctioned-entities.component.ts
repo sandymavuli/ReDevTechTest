@@ -20,7 +20,7 @@ export class SanctionedEntitiesComponent {
   openCreateModal(): void {
     const dialogRef = this.dialog.open(CreateSanctionedEntityComponent, {
       width: '500px',
-      data: { existingSanctions: this.entities } // You can pass data to the modal here if needed
+      data: { existingEntities: this.entities } 
     });
 
     // Handle the emitted event when a new entity is created

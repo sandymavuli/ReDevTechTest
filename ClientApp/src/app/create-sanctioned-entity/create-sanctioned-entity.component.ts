@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Inject,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -9,17 +16,19 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { SanctionedEntitiesService } from '../services/sanctioned-entities.service';
 import { SanctionedEntity } from '../models/sanctioned-entity';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-create-sanctioned-entity',
   templateUrl: './create-sanctioned-entity.component.html',
   styleUrls: ['./create-sanctioned-entity.component.css'],
 })
-export class CreateSanctionedEntityComponent {
+export class CreateSanctionedEntityComponent implements OnDestroy {
   sanctionEntityForm!: FormGroup;
   @Output() entityAdded: EventEmitter<SanctionedEntity> =
     new EventEmitter<SanctionedEntity>(); // Emit new record
   existingEntities: SanctionedEntity[] = [];
+  private destory$ = new Subject<void>();
 
   constructor(
     private dialogRef: MatDialogRef<CreateSanctionedEntityComponent>,
@@ -61,27 +70,30 @@ export class CreateSanctionedEntityComponent {
         return;
       }
 
-      this.entityService.addSanctionedEntity(newEntity).subscribe({
-        next: (response) => {
-          if (response) {
-            this.entityAdded.emit(response);
+      this.entityService
+        .addSanctionedEntity(newEntity)
+        .pipe(takeUntil(this.destory$))
+        .subscribe({
+          next: (response) => {
+            if (response) {
+              this.entityAdded.emit(response);
+              this.showSnackBar(
+                'Sanctioned entity successfully added.',
+                'success'
+              );
+              this.dialogRef.close();
+            }
+          },
+          error: (error) => {
+            console.error('Error adding sanctioned entity', error);
             this.showSnackBar(
-              'Sanctioned entity successfully added.',
-              'success'
+              error.status === 409
+                ? error.error
+                : 'An unexpected error occurred. Please try again.',
+              'error'
             );
-            this.dialogRef.close();
-          }
-        },
-        error: (error) => {
-          console.error('Error adding sanctioned entity', error);
-          this.showSnackBar(
-            error.status === 409
-              ? error.error
-              : 'An unexpected error occurred. Please try again.',
-            'error'
-          );
-        },
-      });
+          },
+        });
     } else {
       // Mark all controls as touched to show validation errors
       this.sanctionEntityForm.markAllAsTouched();
@@ -102,5 +114,10 @@ export class CreateSanctionedEntityComponent {
       duration,
       panelClass: [`snackbar-${type}`],
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destory$.next;
+    this.destory$.complete;
   }
 }
