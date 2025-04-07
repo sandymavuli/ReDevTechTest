@@ -12,7 +12,7 @@ export class CounterService {
   constructor() {}
 
   private loadInitialCount(): number {
-    const existingCount = sessionStorage.getItem(this.countKey);
+    const existingCount = localStorage.getItem(this.countKey);
     return existingCount ? parseInt(existingCount, 10) : 0;
   }
 
@@ -22,6 +22,6 @@ export class CounterService {
 
   private saveCount(value: number) {
     this.countSub.next(value);
-    sessionStorage.setItem(this.countKey, value.toString());
+    localStorage.setItem(this.countKey, value.toString());
   }
 }

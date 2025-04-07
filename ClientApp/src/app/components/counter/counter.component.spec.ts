@@ -13,8 +13,8 @@ describe('CounterComponent', () => {
       providers: [CounterService],
     }).compileComponents();
 
-    spyOn(sessionStorage, 'getItem').and.returnValue(null);
-    spyOn(sessionStorage, 'setItem');
+    spyOn(localStorage, 'getItem').and.returnValue(null);
+    spyOn(localStorage, 'setItem');
   });
 
   beforeEach(() => {
@@ -40,7 +40,7 @@ describe('CounterComponent', () => {
     fixture.detectChanges();
 
     expect(countElement.textContent).toEqual('1');
-    expect(sessionStorage.setItem).toHaveBeenCalledWith('keyCounter', '1');
+    expect(localStorage.setItem).toHaveBeenCalledWith('keyCounter', '1');
   }));
 
   it('should increment the count correctly on repeated clicks', fakeAsync(() => {
@@ -66,10 +66,10 @@ describe('CounterComponent', () => {
     expect(countElement.textContent).toEqual('3');
   
     //Assert
-    expect(sessionStorage.setItem).toHaveBeenCalledWith('keyCounter', '1');
-    expect(sessionStorage.setItem).toHaveBeenCalledWith('keyCounter', '2');
-    expect(sessionStorage.setItem).toHaveBeenCalledWith('keyCounter', '3');
-    expect(sessionStorage.setItem).toHaveBeenCalledTimes(3);
+    expect(localStorage.setItem).toHaveBeenCalledWith('keyCounter', '1');
+    expect(localStorage.setItem).toHaveBeenCalledWith('keyCounter', '2');
+    expect(localStorage.setItem).toHaveBeenCalledWith('keyCounter', '3');
+    expect(localStorage.setItem).toHaveBeenCalledTimes(3);
   }));
 
 });
